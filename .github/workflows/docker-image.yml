@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: checkout project
+    - name: Checkout Project
       uses: actions/checkout@v3
 
     - name: Login to Docker Hub
@@ -21,6 +21,12 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+        
+    - name: setup versioning
+      id: vars
+      run: |
+        echo "build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+        echo "build_version="$(date -u +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
     - name: Build and push
       uses: docker/build-push-action@v4
@@ -28,7 +34,7 @@ jobs:
         context: .        
         file: Dockerfile
         build-args: |
-          BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          BUILD_VERSION=latest
+          BUILD_DATE=${{ steps.vars.outputs.build_date }}
+          BUILD_VERSION=${{ steps.vars.outputs.build_version }}
         push: true
-        tags: siutin/stable-diffusion-webui-docker:latest
+        tags: siutin/stable-diffusion-webui-docker:${{ steps.vars.outputs.build_version }}
