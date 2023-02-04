@@ -25,8 +25,10 @@ jobs:
     - name: setup versioning
       id: vars
       run: |
-        echo "build_date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
-        echo "build_version="$(date -u +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+        build_date="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+        build_version="$(date -u +'%Y-%m-%d')"
+        echo "build_date=$build_date" >> $GITHUB_OUTPUT
+        echo "build_version=$build_version" >> $GITHUB_OUTPUT
 
     - name: Build and push
       uses: docker/build-push-action@v4
