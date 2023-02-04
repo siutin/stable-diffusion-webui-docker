@@ -4,10 +4,10 @@
 
 ```
 # linux x86_64: 
-docker build --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')  --build-arg v1 -t siutin/stable-diffusion-webui .
+docker build --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')  --build-arg BUILD_VERSION=latest -t siutin/stable-diffusion-webui .
 
 # arm64
-docker build --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')  --build-arg v1 -t siutin/stable-diffusion-webui -f Dockerfile.arm64 .
+docker build --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')  --build-arg BUILD_VERSION=latest -t siutin/stable-diffusion-webui -f Dockerfile.arm64 .
 ```
 
 ### Run with cpu only
