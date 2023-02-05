@@ -39,4 +39,6 @@ jobs:
           BUILD_DATE=${{ steps.vars.outputs.build_date }}
           BUILD_VERSION=${{ steps.vars.outputs.build_version }}
         push: true
-        tags: siutin/stable-diffusion-webui-docker:${{ steps.vars.outputs.build_version }}
+        tags: |
+          siutin/stable-diffusion-webui-docker:latest
+          siutin/stable-diffusion-webui-docker:${{ steps.vars.outputs.build_version }}
