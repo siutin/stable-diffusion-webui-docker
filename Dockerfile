@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim
+FROM --platform=$TARGETPLATFORM debian:bookworm-slim
 LABEL maintainer="Martin Chan @osiutino"
 
 ARG BUILD_DATE
@@ -8,7 +8,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE
 LABEL org.label-schema.version=$BUILD_VERSION
 
 RUN apt update
-RUN apt install -y wget git sudo libgl1 libglib2.0-dev
+RUN apt install -y wget git gcc sudo libgl1 libglib2.0-dev python3-dev
 
 RUN useradd --home /app -M app -K UID_MIN=10000 -K GID_MIN=10000 -s /bin/bash
 RUN mkdir /app
@@ -19,8 +19,8 @@ RUN echo 'app ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER app
 WORKDIR /app/
 
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN bash ./Miniconda3-latest-Linux-x86_64.sh -b
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-$(uname -m).sh
+RUN bash ./Miniconda3-latest-Linux-$(uname -m).sh -b
 
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git /app/stable-diffusion-webui
 
