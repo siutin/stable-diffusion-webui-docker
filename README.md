@@ -3,7 +3,7 @@
 ### Build custom image
 
 ```
-docker build --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')  --build-arg BUILD_VERSION=latest -t siutin/stable-diffusion-webui-docker .
+docker buildx build --platform linux/amd64 --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')  --build-arg BUILD_VERSION=custom -t siutin/stable-diffusion-webui-docker:custom .
 ```
 
 ### Run with cpu only
