@@ -7,22 +7,24 @@ ARG BUILD_VERSION
 LABEL org.label-schema.build-date=$BUILD_DATE
 LABEL org.label-schema.version=$BUILD_VERSION
 
-RUN apt update
-RUN apt install -y wget git gcc sudo libgl1 libglib2.0-dev python3-dev google-perftools 
+RUN apt update && apt install -y --no-install-recommends \
+        bash ca-certificates wget git gcc sudo libgl1 libglib2.0-dev python3-dev google-perftools \
+        && rm -rf /var/lib/apt/lists/*
 
 RUN echo "LD_PRELOAD=/usr/lib/libtcmalloc.so.4" | tee -a /etc/environment
 
 RUN useradd --home /app -M app -K UID_MIN=10000 -K GID_MIN=10000 -s /bin/bash
 RUN mkdir /app
 RUN chown app:app -R /app
-RUN adduser app sudo
+RUN usermod -aG sudo app
 RUN echo 'app ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER app
 WORKDIR /app/
 
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-$(uname -m).sh
-RUN bash ./Miniconda3-latest-Linux-$(uname -m).sh -b
+RUN bash ./Miniconda3-latest-Linux-$(uname -m).sh -b \
+    && rm -rf ./Miniconda3-latest-Linux-$(uname -m).sh
 
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git /app/stable-diffusion-webui
 
