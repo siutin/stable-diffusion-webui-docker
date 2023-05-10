@@ -8,7 +8,9 @@ LABEL org.label-schema.build-date=$BUILD_DATE
 LABEL org.label-schema.version=$BUILD_VERSION
 
 RUN apt update
-RUN apt install -y wget git gcc sudo libgl1 libglib2.0-dev python3-dev
+RUN apt install -y wget git gcc sudo libgl1 libglib2.0-dev python3-dev google-perftools 
+
+RUN echo "LD_PRELOAD=/usr/lib/libtcmalloc.so.4" | tee -a /etc/environment
 
 RUN useradd --home /app -M app -K UID_MIN=10000 -K GID_MIN=10000 -s /bin/bash
 RUN mkdir /app
