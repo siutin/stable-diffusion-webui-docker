@@ -24,12 +24,11 @@ RUN bash ./Miniconda3-latest-Linux-$(uname -m).sh -b
 
 RUN git clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git /app/stable-diffusion-webui
 
-RUN sed -i -E 's/\+?cu([0-9]{3})//g' /app/stable-diffusion-webui/launch.py
-RUN sed -i -E 's/torchvision==([^ ]+)/torchvision/g' /app/stable-diffusion-webui/launch.py
-
 ENV PATH /app/miniconda3/bin/:$PATH
 
 RUN conda install python="3.10" -y
 
 WORKDIR /app/stable-diffusion-webui
-RUN  bash ./webui.sh --skip-torch-cuda-test || exit 0
+
+RUN  export TORCH_COMMAND="pip install torch==2.0.0 torchvision==0.15.1" && \
+    bash ./webui.sh --skip-torch-cuda-test || exit 0
