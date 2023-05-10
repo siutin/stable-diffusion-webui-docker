@@ -12,5 +12,5 @@ docker run -it --name sdw --network host \
   -v $(pwd)/models:/app/stable-diffusion-webui/models \
   -v $(pwd)/outputs:/app/stable-diffusion-webui/outputs \
   --rm siutin/stable-diffusion-webui-docker \
-  bash webui.sh --skip-torch-cuda-test --precision full --no-half --use-cpu SD GFPGAN BSRGAN ESRGAN SCUNet --all --share
+  bash webui.sh --skip-torch-cuda-test --precision full --no-half --use-cpu all SD GFPGAN BSRGAN ESRGAN SCUNet --share
 ```
