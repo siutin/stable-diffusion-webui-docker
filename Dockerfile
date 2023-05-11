@@ -34,10 +34,5 @@ RUN conda install python="3.10" -y
 
 WORKDIR /app/stable-diffusion-webui
 
-ARG NO_CKPT=1
-
 RUN export TORCH_COMMAND="pip install torch==2.0.0 torchvision==0.15.1" && \
-    bash ./webui.sh --skip-torch-cuda-test --use-cpu all --no-download-sd-model | grep "No checkpoints found." && \
-    export NO_CKPT=0 || exit 0
-
-RUN [ "$NO_CKPT" = "1" ] || exit -1
+    bash ./webui.sh --skip-torch-cuda-test --use-cpu all --no-download-sd-model 2>&1 | grep "No checkpoints found." || exit 1
