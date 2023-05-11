@@ -3,14 +3,35 @@
 ### Build custom image
 
 ```
-docker buildx build --platform linux/amd64 --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')  --build-arg BUILD_VERSION=custom -t siutin/stable-diffusion-webui-docker:custom .
+# Nvidia CUDA image
+nvidia-docker buildx build -f Dockerfile.cuda \
+                           --platform linux/amd64 \
+                           --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+                           --build-arg BUILD_VERSION=custom-cuda \
+                           -t siutin/stable-diffusion-webui-docker:custom-cuda .
+
+# CPU only image
+docker buildx build -f Dockerfile.cpu \
+                           --platform linux/arm64 \
+                           --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') \
+                           --build-arg BUILD_VERSION=custom-cpu \
+                           -t siutin/stable-diffusion-webui-docker:custom-cpu .
 ```
 
-### Run with cpu only
+### Run with CUDA
+```
+docker run -it --name sdw --gpus all --network host \          
+  -v $(pwd)/models:/app/stable-diffusion-webui/models \         
+  -v $(pwd)/outputs:/app/stable-diffusion-webui/outputs \
+  --rm siutin/stable-diffusion-webui-docker:latest-cuda \       
+  bash webui.sh --share
+```
+
+### Run with CPU only
 ```
 docker run -it --name sdw --network host \
   -v $(pwd)/models:/app/stable-diffusion-webui/models \
   -v $(pwd)/outputs:/app/stable-diffusion-webui/outputs \
-  --rm siutin/stable-diffusion-webui-docker \
-  bash webui.sh --skip-torch-cuda-test --precision full --no-half --use-cpu all SD GFPGAN BSRGAN ESRGAN SCUNet --share
+  --rm siutin/stable-diffusion-webui-docker:latest-cpu \
+  bash webui.sh --skip-torch-cuda-test --use-cpu all --share
 ```
