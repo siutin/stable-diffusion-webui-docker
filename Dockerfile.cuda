@@ -34,4 +34,6 @@ RUN conda install python="3.10" -y
 
 WORKDIR /app/stable-diffusion-webui
 
-RUN bash ./webui.sh --skip-torch-cuda-test --no-download-sd-model 2>&1 | grep "No checkpoints found." || exit 1
+RUN touch install.log && \
+    timeout 2h bash -c "./webui.sh --skip-torch-cuda-test --no-download-sd-model 2>&1 | tee install.log &" && \
+    sleep 5 && while true; do grep -q "No checkpoints found." install.log && exit 0; grep -q "ERROR" install.log && exit 1; sleep 3; done
