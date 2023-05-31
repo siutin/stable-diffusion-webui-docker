@@ -18,6 +18,13 @@ docker buildx build -f Dockerfile.cpu \
                            -t siutin/stable-diffusion-webui-docker:custom-cpu .
 ```
 
+### Prepare the directory mapping in your host:
+```
+mkdir -p /MY-DATA-DIR && cd /MY-DATA-DIR
+sudo chown 10000:$UID -R models outputs
+sudo chmod 775 -R models outputs
+```
+
 ### Run with CUDA
 ```
 docker run -it --name sdw --gpus all --network host \          
