@@ -6,7 +6,12 @@ on:
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
-  
+    inputs:
+      branch_or_tag:
+        description: 'Branch or Tag to build'
+        required: true
+        default: 'master'
+
 jobs:
 
   build:
@@ -41,12 +46,13 @@ jobs:
         context: .
         file: Dockerfile.cpu
         build-args: |
+          BRANCH_OR_TAG=${{ github.event.inputs.branch_or_tag }}
           BUILD_DATE=${{ steps.vars.outputs.build_date }}
           BUILD_VERSION=${{ steps.vars.outputs.build_version }}
         push: true
         tags: |
           siutin/stable-diffusion-webui-docker:latest-cpu
-          siutin/stable-diffusion-webui-docker:cpu-${{ steps.vars.outputs.build_version }}
+          siutin/stable-diffusion-webui-docker:cpu-${{ github.event.inputs.branch_or_tag }}-${{ steps.vars.outputs.build_version }}
         platforms: linux/amd64,linux/arm64
       
     - name: Build and push
@@ -55,10 +61,11 @@ jobs:
         context: .
         file: Dockerfile.cuda
         build-args: |
+          BRANCH_OR_TAG=${{ github.event.inputs.branch_or_tag }}
           BUILD_DATE=${{ steps.vars.outputs.build_date }}
           BUILD_VERSION=${{ steps.vars.outputs.build_version }}
         push: true
         tags: |
           siutin/stable-diffusion-webui-docker:latest-cuda
-          siutin/stable-diffusion-webui-docker:cuda-${{ steps.vars.outputs.build_version }}
+          siutin/stable-diffusion-webui-docker:cuda-${{ github.event.inputs.branch_or_tag }}-${{ steps.vars.outputs.build_version }}
         platforms: linux/amd64
