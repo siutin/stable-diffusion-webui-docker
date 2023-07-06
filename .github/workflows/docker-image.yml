@@ -19,6 +19,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Frees Disk Space (Ubuntu)
+      # For more info about this task, see https://github.com/uab-cgds-worthey/quac/issues/78
+      uses: jlumbroso/free-disk-space@v1.2.0
+      with:
+        # this might remove tools that are actually needed, when set to "true"
+        tool-cache: true
+          
     - name: Checkout Project
       uses: actions/checkout@v3
 
