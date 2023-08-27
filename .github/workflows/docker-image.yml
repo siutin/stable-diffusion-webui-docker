@@ -7,6 +7,10 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
     inputs:
+      release_stage:
+        description: 'Release stage of the build'
+        required: true
+        default: 'master'
       branch_or_tag:
         description: 'Branch or Tag to build'
         required: true
@@ -94,12 +98,13 @@ jobs:
         context: .
         file: Dockerfile.cpu
         build-args: |
+          RELEASE_STAGE=${{ github.event.inputs.release_stage }}
           BRANCH_OR_TAG=${{ github.event.inputs.branch_or_tag }}
           BUILD_DATE=${{ steps.vars.outputs.build_date }}
           BUILD_VERSION=${{ steps.vars.outputs.build_version }}
         push: true
         tags: |
-          siutin/stable-diffusion-webui-docker:latest-cpu
+          siutin/stable-diffusion-webui-docker:${{ github.event.inputs.release_stage }}-cpu
           siutin/stable-diffusion-webui-docker:cpu-${{ github.event.inputs.branch_or_tag }}-${{ steps.vars.outputs.build_version }}
         platforms: linux/amd64,linux/arm64
       
@@ -109,11 +114,12 @@ jobs:
         context: .
         file: Dockerfile.cuda
         build-args: |
+          RELEASE_STAGE=${{ github.event.inputs.release_stage }}
           BRANCH_OR_TAG=${{ github.event.inputs.branch_or_tag }}
           BUILD_DATE=${{ steps.vars.outputs.build_date }}
           BUILD_VERSION=${{ steps.vars.outputs.build_version }}
         push: true
         tags: |
-          siutin/stable-diffusion-webui-docker:latest-cuda
+          siutin/stable-diffusion-webui-docker:${{ github.event.inputs.release_stage }}-cuda
           siutin/stable-diffusion-webui-docker:cuda-${{ github.event.inputs.branch_or_tag }}-${{ steps.vars.outputs.build_version }}
         platforms: linux/amd64
