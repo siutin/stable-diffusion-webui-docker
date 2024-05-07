@@ -9,7 +9,7 @@ LABEL org.label-schema.build-date=$BUILD_DATE
 LABEL org.label-schema.version="${BRANCH_OR_TAG}_${BUILD_VERSION}"
 
 RUN apt update && apt install -y --no-install-recommends \
-        bash ca-certificates wget git gcc sudo libgl1 libglib2.0-dev python3-dev google-perftools \
+        bash bc ca-certificates wget git gcc sudo libgl1 libglib2.0-dev python3-dev google-perftools \
         && rm -rf /var/lib/apt/lists/*
 
 RUN useradd --home /app -M app -K UID_MIN=10000 -K GID_MIN=10000 -s /bin/bash
