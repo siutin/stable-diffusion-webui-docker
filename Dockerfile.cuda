@@ -12,8 +12,6 @@ RUN apt update && apt install -y --no-install-recommends \
         bash ca-certificates wget git gcc sudo libgl1 libglib2.0-dev python3-dev google-perftools \
         && rm -rf /var/lib/apt/lists/*
 
-RUN echo "LD_PRELOAD=/usr/lib/libtcmalloc.so.4" | tee -a /etc/environment
-
 RUN useradd --home /app -M app -K UID_MIN=10000 -K GID_MIN=10000 -s /bin/bash
 RUN mkdir /app
 RUN chown app:app -R /app
