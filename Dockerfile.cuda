@@ -29,7 +29,7 @@ RUN git clone --depth 1 --branch $BRANCH_OR_TAG https://github.com/AUTOMATIC1111
 
 ENV PATH /app/miniconda3/bin/:$PATH
 
-RUN conda install python="3.12" -y
+RUN conda install python="3.11" -y
 
 WORKDIR /app/stable-diffusion-webui
 
