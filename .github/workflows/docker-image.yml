@@ -7,6 +7,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
     inputs:
+      target:
+        description: 'Bulid and push target'
+        default: ''
       release_stage:
         description: 'Release stage of the build'
         required: true
@@ -93,6 +96,7 @@ jobs:
         echo "build_version=$build_version" >> $GITHUB_OUTPUT
 
     - name: Build and push
+      if: "contains(github.event.inputs.target, 'cpu')"
       uses: docker/build-push-action@v4
       with:
         context: .
@@ -109,6 +113,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
       
     - name: Build and push
+      if: "contains(github.event.inputs.target, 'cuda')"
       uses: docker/build-push-action@v4
       with:
         context: .
