@@ -1,4 +1,7 @@
-FROM --platform=$TARGETPLATFORM nvidia/cuda:12.1.1-devel-ubuntu22.04
+ARG CUDA_VERSION=12.1.1
+ARG UBUNTU_VERSION=22.04
+ARG GPU_BASE=nvidia/cuda:$CUDA_VERSION-devel-ubuntu$UBUNTU_VERSION
+FROM --platform=$TARGETPLATFORM $GPU_BASE
 LABEL maintainer="Martin Chan @osiutino"
 
 ARG BRANCH_OR_TAG=master

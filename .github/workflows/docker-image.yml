@@ -18,6 +18,15 @@ on:
         description: 'Branch or Tag to build'
         required: true
         default: 'master'
+      debian_version:
+        description: 'Debian version'
+        default: 'bookworm'
+      cuda_version:
+        description: 'CUDA version'
+        default: '12.6.2'
+      ubuntu_version:
+        description: 'Ubuntu version'
+        default: '24.04'
 
 jobs:
 
@@ -106,6 +115,7 @@ jobs:
           BRANCH_OR_TAG=${{ github.event.inputs.branch_or_tag }}
           BUILD_DATE=${{ steps.vars.outputs.build_date }}
           BUILD_VERSION=${{ steps.vars.outputs.build_version }}
+          DEBIAN_VERSION=${{ github.event.inputs.debian_version }}
         push: true
         tags: |
           siutin/stable-diffusion-webui-docker:${{ github.event.inputs.release_stage }}-cpu
@@ -123,8 +133,10 @@ jobs:
           BRANCH_OR_TAG=${{ github.event.inputs.branch_or_tag }}
           BUILD_DATE=${{ steps.vars.outputs.build_date }}
           BUILD_VERSION=${{ steps.vars.outputs.build_version }}
+          CUDA_VERSION=${{ github.event.inputs.cuda_version }}
+          UBUNTU_VERSION=${{ github.event.inputs.ubuntu_version }}
         push: true
         tags: |
-          siutin/stable-diffusion-webui-docker:${{ github.event.inputs.release_stage }}-cuda
-          siutin/stable-diffusion-webui-docker:cuda-${{ github.event.inputs.branch_or_tag }}-${{ steps.vars.outputs.build_version }}
+          siutin/stable-diffusion-webui-docker:${{ github.event.inputs.release_stage }}-cuda-${{ github.event.inputs.cuda_version }}
+          siutin/stable-diffusion-webui-docker:cuda-${{ github.event.inputs.cuda_version }}-${{ github.event.inputs.branch_or_tag }}-${{ steps.vars.outputs.build_version }}
         platforms: linux/amd64

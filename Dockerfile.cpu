@@ -1,4 +1,6 @@
-FROM --platform=$TARGETPLATFORM debian:bookworm-slim
+ARG DEBIAN_VERSION=bookworm
+ARG CPU_BASE=debian:$DEBIAN_VERSION-slim
+FROM --platform=$TARGETPLATFORM $CPU_BASE
 LABEL maintainer="Martin Chan @osiutino"
 
 ARG BRANCH_OR_TAG=master
