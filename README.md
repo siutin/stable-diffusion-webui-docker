@@ -1,5 +1,16 @@
 # Stable Diffusion Webui Docker Image
 
+### Compatibility and Breaking Changes
+
+If you encounter issues that were not present before, please try switching to the following image versions:
+
+```
+siutin/stable-diffusion-webui-docker:latest-cuda-12.1.1
+siutin/stable-diffusion-webui-docker:cuda-v1.10.1-2024-07-30
+```
+
+---
+
 ### Prepare the directory mapping in your host:
 ```
 mkdir -p /MY-DATA-DIR && cd /MY-DATA-DIR
