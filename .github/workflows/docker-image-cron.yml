@@ -85,6 +85,6 @@ jobs:
               curl -X POST \
                 -H "Accept: application/vnd.github.v3+json" \
                 -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                https://api.github.com/repos/siutin/stable-diffusion-webui-docker/actions/workflows/docker-image.yml/dispatches \
-                -d "{\"ref\":\"main\", \"inputs\": {\"target\": \"cuda\", \"release_stage\": \"${{ github.event.inputs.release_stage }}\", \"branch_or_tag\": \"${{ github.event.inputs.branch_or_tag }}\", \"debian_version\": \"bookworm\", \"cuda_version\": \"$VERSION\", \"ubuntu_version\": \"$UBUNTU_VERSION\"}}"
+                https://api.github.com/repos/${{ github.repository }}/actions/workflows/docker-image.yml/dispatches \
+                -d "{\"ref\":\"main\", \"inputs\": {\"target\": \"cuda\", \"release_stage\": \"${{ github.event.inputs.release_stage }}\", \"branch_or_tag\": \"${{ github.event.inputs.branch_or_tag }}\", \"debian_version\": \"bookworm\", \"cuda_version\": \"$CUDA_VERSION\", \"ubuntu_version\": \"$UBUNTU_VERSION\"}}"
           done
