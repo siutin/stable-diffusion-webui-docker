@@ -1,0 +1,90 @@
+name: Docker Image Cron
+
+on:
+#  schedule:
+#    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      release_stage:
+        description: 'Release stage of the build'
+        required: true
+        default: 'master'
+      branch_or_tag:
+        description: 'Branch or Tag to build'
+        required: true
+        default: 'master'
+
+jobs:
+  check_for_cuda_images:
+    runs-on: ubuntu-latest
+    outputs:
+      filtered_tags: ${{ steps.fetch_cuda_tags.outputs.filtered_tags }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Fetch CUDA tags
+        id: fetch_cuda_tags
+        run: |
+          #!/bin/bash
+
+          REPOSITORY_NAME="nvidia/cuda"
+          REGEX_PATTERN="\\d{2}\\.\\d{1,2}\\.\\d{1,2}-devel-ubuntu\\d{2}\\.\\d{2}"
+
+          BASE_URL="https://registry.hub.docker.com/v2/repositories/$REPOSITORY_NAME/tags"
+
+          PAGE=1
+          PAGE_SIZE=100
+          TOTAL_COUNT=$(curl -s "$BASE_URL" | jq -r '.count')
+
+          declare -a TAGS_ARRAY
+          while [ $(( (PAGE - 1) * PAGE_SIZE )) -lt "$TOTAL_COUNT" ]; do
+              TAGS=$(curl -s "$BASE_URL?page=$PAGE&page_size=$PAGE_SIZE" | jq -r '.results[] | {name: .name, last_pushed: .tag_last_pushed}')
+              TAGS_ARRAY+=("$TAGS")
+              PAGE=$((PAGE + 1))
+          done
+          SORTED_TAGS=$(printf "%s\n" "${TAGS_ARRAY[@]}" | jq -s 'sort_by(.last_pushed) | reverse')
+
+          # Filter tags by regex pattern if provided
+          if [ -n "$REGEX_PATTERN" ]; then
+              SORTED_TAGS=$(echo "$SORTED_TAGS" | jq --arg pattern "$REGEX_PATTERN" '[.[] | select(.name | test($pattern))]')
+          fi
+
+          # Group by CUDA version and pick the latest Ubuntu version
+          GROUPED_TAGS=$(echo "$SORTED_TAGS" | jq -r '
+              .[] | 
+              { 
+                  cuda: (.name | split("-devel-ubuntu")[0]), 
+                  ubuntu: (.name | split("-devel-ubuntu")[1]), 
+                  last_pushed: .last_pushed 
+              }' | \
+              jq -s '
+                  group_by(.cuda) |
+                  map({
+                      cuda: .[0].cuda,
+                      ubuntu: map(.ubuntu) | unique | sort | last,
+                      last_pushed: map(.last_pushed) | max
+                  })
+          ')
+
+          echo "$GROUPED_TAGS"
+          echo "filtered_tags=$(echo "$GROUPED_TAGS" | jq -c . | tr -d '\n' | sed 's/"/\\"/g')" >> $GITHUB_OUTPUT
+
+  trigger_docker_build:
+    runs-on: ubuntu-latest
+    needs: check_for_cuda_images
+    if: needs.check_for_cuda_images.outputs.filtered_tags != '[]'
+    steps:
+      - name: Trigger Docker Image CI for tags
+        run: |
+          TAGS="${{ needs.check_for_cuda_images.outputs.filtered_tags }}"
+          echo "$TAGS" | jq -c '.[]' | while read -r tag; do
+              CUDA_VERSION=$(echo "$tag" | jq -r '.cuda')
+              UBUNTU_VERSION=$(echo "$tag" | jq -r '.ubuntu')
+              echo "Triggering Docker build for CUDA version: $CUDA_VERSION with Ubuntu version: $UBUNTU_VERSION"
+              curl -X POST \
+                -H "Accept: application/vnd.github.v3+json" \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                https://api.github.com/repos/siutin/stable-diffusion-webui-docker/actions/workflows/docker-image.yml/dispatches \
+                -d "{\"ref\":\"main\", \"inputs\": {\"target\": \"cuda\", \"release_stage\": \"${{ github.event.inputs.release_stage }}\", \"branch_or_tag\": \"${{ github.event.inputs.branch_or_tag }}\", \"debian_version\": \"bookworm\", \"cuda_version\": \"$VERSION\", \"ubuntu_version\": \"$UBUNTU_VERSION\"}}"
+          done
