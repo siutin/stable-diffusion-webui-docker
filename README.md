@@ -72,6 +72,12 @@ docker buildx build -f Dockerfile.cpu \
                            --build-arg BUILD_VERSION=custom-cpu \
                            -t siutin/stable-diffusion-webui-docker:custom-cpu .
 ```
+### Enable API and remote access
+
+```
+# Enable API and Remote Access to the container for tools like Open-WebUI
+just add 'bash webui.sh --api --listen' to the different images above
+```
 
 ### Miscellaneous
 
