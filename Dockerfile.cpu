@@ -31,6 +31,9 @@ RUN git clone --depth 1 --branch $BRANCH_OR_TAG https://github.com/AUTOMATIC1111
 
 ENV PATH /app/miniconda3/bin/:$PATH
 
+RUN conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main \
+ && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+
 RUN conda install python="3.11" -y
 
 WORKDIR /app/stable-diffusion-webui
