@@ -39,6 +39,15 @@ RUN conda install python="3.11" -y
 
 WORKDIR /app/stable-diffusion-webui
 
+RUN python -m venv venv
+
+ENV STABLE_DIFFUSION_REPO https://github.com/joypaul162/Stability-AI-stablediffusion.git
+ENV STABLE_DIFFUSION_COMMIT_HASH=f16630a927e00098b524d687640719e4eb469b76
+
+RUN venv/bin/pip install --no-cache-dir --upgrade pip wheel && \
+    venv/bin/pip install --no-cache-dir "setuptools<70" && \
+    venv/bin/pip install --no-cache-dir --no-build-isolation git+https://github.com/openai/CLIP.git@d50d76daa670286dd6cacf3bcd80b5e4823fc8e1
+
 RUN touch install.log && \
     timeout 2h bash -c "export python_cmd='python3.11' && export TORCH_COMMAND=\"pip install torch==2.9.1 torchvision==0.24.1\" && ./webui.sh --skip-torch-cuda-test --no-download-sd-model 2>&1 | tee install.log &" && \
     sleep 5 && while true; do grep -q "No checkpoints found." install.log && exit 0; grep -q "ERROR" install.log && exit 1; sleep 3; done
